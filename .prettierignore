@@ -1,3 +1,5 @@
+.yarn/*
 node_modules
 lib
-.pnp.cjs
+.pnp.*
+.vscode/
