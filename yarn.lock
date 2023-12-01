@@ -180,6 +180,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/rule-tester@npm:^6.13.1":
+  version: 6.13.1
+  resolution: "@typescript-eslint/rule-tester@npm:6.13.1"
+  dependencies:
+    "@typescript-eslint/typescript-estree": "npm:6.13.1"
+    "@typescript-eslint/utils": "npm:6.13.1"
+    ajv: "npm:^6.10.0"
+    lodash.merge: "npm:4.6.2"
+    semver: "npm:^7.5.4"
+  peerDependencies:
+    "@eslint/eslintrc": ">=2"
+    eslint: ">=8"
+  checksum: 2409e97541dcf53b80c5f4b5c56eff440a621c7dc94f1dd5eea63d9bc852440e513bcf123a86f9b54a884c123f6ea578361836a60f8c9b158c3f8b1a98f464df
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/scope-manager@npm:6.13.1":
   version: 6.13.1
   resolution: "@typescript-eslint/scope-manager@npm:6.13.1"
@@ -232,7 +248,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:6.13.1":
+"@typescript-eslint/utils@npm:6.13.1, @typescript-eslint/utils@npm:^6.13.1":
   version: 6.13.1
   resolution: "@typescript-eslint/utils@npm:6.13.1"
   dependencies:
@@ -284,7 +300,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:^6.12.4":
+"ajv@npm:^6.10.0, ajv@npm:^6.12.4":
   version: 6.12.6
   resolution: "ajv@npm:6.12.6"
   dependencies:
@@ -465,6 +481,8 @@ __metadata:
     "@types/eslint": "npm:^8"
     "@typescript-eslint/eslint-plugin": "npm:^6.13.1"
     "@typescript-eslint/parser": "npm:^6.13.1"
+    "@typescript-eslint/rule-tester": "npm:^6.13.1"
+    "@typescript-eslint/utils": "npm:^6.13.1"
     eslint: "npm:^8.54.0"
     eslint-config-prettier: "npm:^9.0.0"
     prettier: "npm:^3.1.0"
@@ -883,7 +901,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.merge@npm:^4.6.2":
+"lodash.merge@npm:4.6.2, lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: 402fa16a1edd7538de5b5903a90228aa48eb5533986ba7fa26606a49db2572bf414ff73a2c9f5d5fd36b31c46a5d5c7e1527749c07cbcf965ccff5fbdf32c506
