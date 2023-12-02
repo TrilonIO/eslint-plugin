@@ -26,6 +26,5 @@ jobs:
     - name: Install Yarn
       run: npm install -g yarn
     - run: yarn install --immutable # Replace npm ci with yarn install
-    - run: yarn build --if-present # Replace npm run build with yarn build
-    - run: yarn test # Replace npm test with yarn test
-    - run: yarn lint # Add this line to run linter
+    - run: yarn test
+    - run: yarn lint
