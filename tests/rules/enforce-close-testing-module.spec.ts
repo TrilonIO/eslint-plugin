@@ -109,11 +109,11 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
           closeAliases: [
             {
               kind: 'function',
-              name: 'customClose'
-            }
+              name: 'customClose',
+            },
           ],
-        }
-      ]
+        },
+      ],
     },
   ],
   invalid: [
