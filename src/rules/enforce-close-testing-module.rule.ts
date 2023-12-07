@@ -18,7 +18,26 @@ function typeOfHook(hookName: TestBeforeHooks | TestAfterHooks): HookType {
   return hookName.includes('All') ? 'all' : 'each';
 }
 
-export default createRule({
+export type Options = [
+  {
+    closeAliases?: {
+      kind: string;
+      name: string;
+    }[];
+  }
+]
+
+const defaultOptions: Options = [
+  {
+    closeAliases: [
+
+    ]
+  }
+]
+
+export type MessageIds = 'testModuleNotClosed' | 'testModuleClosedInWrongHook';
+
+export default createRule<Options, MessageIds>({
   name: 'enforce-close-testing-module',
   meta: {
     type: 'problem',
@@ -27,7 +46,27 @@ export default createRule({
       recommended: 'recommended',
     },
     fixable: undefined,
-    schema: [], // no options
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          closeAliases: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                kind: {
+                  type: 'string',
+                },
+                name: {
+                  type: 'string',
+                }
+              }
+            }
+          }
+        }
+      }
+    ], // no options
     messages: {
       testModuleNotClosed:
         'A Testing Module was created but not closed, which can cause memory leaks',
@@ -35,7 +74,7 @@ export default createRule({
         'A Testing Module was created in {{ created }} but was closed in the wrong hook {{ closed }}',
     },
   },
-  defaultOptions: [],
+  defaultOptions,
   create(context) {
     let testModuleCreated = false;
     let testModuleClosed = false;
@@ -147,6 +186,28 @@ export default createRule({
               closed: closedInHook,
             },
           });
+        }
+      },
+      'CallExpression[callee.type="Identifier"]': (node: TSESTree.CallExpression) => {
+        const calleeName = (node.callee as TSESTree.Identifier).name;
+        const functionAliases = context.options[0]?.closeAliases?.filter(alias => alias.kind === 'function')
+
+        if (functionAliases?.some(alias => alias.name === calleeName)) {
+          testModuleClosed = true;
+
+        // Logic to check if module.close() is called in the wrong hook
+        const callExpressions = traverser.getAllParentCallExpressions(node);
+        const callExpressionWithHook = callExpressions.find(
+          (expression) =>
+            ASTUtils.isIdentifier(expression.callee) &&
+            ['afterAll', 'afterEach'].includes(expression.callee.name)
+        );
+        if (
+          callExpressionWithHook &&
+          ASTUtils.isIdentifier(callExpressionWithHook.callee)
+        ) {
+          closedInHook = callExpressionWithHook.callee.name as TestAfterHooks;
+        }
         }
       },
       'Program:exit': (node) => {

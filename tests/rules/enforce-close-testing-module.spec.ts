@@ -87,6 +87,34 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
         });
       `,
     },
+    {
+      code: `
+        describe('Closes the testingModule using a custom function', () => {
+          let testingModule: TestingModule;
+          beforeEach(async () => {
+            testingModule = await Test.createTestingModule({
+              imports: [AppModule],
+            }).compile();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+        afterEach(async () => {
+          await customClose();
+        });
+      `,
+      options: [
+        {
+          closeAliases: [
+            {
+              kind: 'function',
+              name: 'customClose'
+            }
+          ],
+        }
+      ]
+    },
   ],
   invalid: [
     {
