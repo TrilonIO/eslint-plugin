@@ -18,12 +18,14 @@ function typeOfHook(hookName: TestBeforeHooks | TestAfterHooks): HookType {
   return hookName.includes('All') ? 'all' : 'each';
 }
 
+type CloseAlias = {
+  kind: 'function' | 'method';
+  name: string;
+};
+
 export type Options = [
   {
-    closeAliases?: {
-      kind: string;
-      name: string;
-    }[];
+    closeAliases?: CloseAlias[];
   },
 ];
 
@@ -184,6 +186,19 @@ export default createRule<Options, MessageIds>({
         );
 
         if (functionAliases?.some((alias) => alias.name === calleeName)) {
+          testModuleClosed = true;
+          closedInHook = afterHookContainingNode(node);
+        }
+      },
+      'MemberExpression[property.type="Identifier"]': (
+        node: TSESTree.MemberExpression
+      ) => {
+        const methodName = (node.property as TSESTree.Identifier).name;
+        const methodAliases = context.options[0]?.closeAliases?.filter(
+          (alias) => alias.kind === 'method'
+        );
+
+        if (methodAliases?.some((alias) => alias.name === methodName)) {
           testModuleClosed = true;
           closedInHook = afterHookContainingNode(node);
         }
