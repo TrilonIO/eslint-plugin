@@ -115,6 +115,33 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
         },
       ],
     },
+    {
+      code: `
+        import { createTestingModule } from './test-utils';
+        describe('Creates the testingModule using the function alias', () => {
+          let testingModule: TestingModule;
+          beforeEach(async () => {
+            testingModule = await createTestingModule();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+        afterEach(async () => {
+          await testingModule.close();
+        });
+      `,
+      options: [
+        {
+          closeAliases: [
+            {
+              kind: 'method',
+              name: 'createTestingModule',
+            },
+          ],
+        },
+      ],
+    },
   ],
   invalid: [
     {
@@ -190,6 +217,35 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
             created: 'beforeAll',
             closed: 'afterEach',
           },
+        },
+      ],
+    },
+    {
+      code: `
+        import { customCreateTestingModule } from './test-utils';
+        describe('Creates the testingModule using the function alias but does not close it', () => {
+          let testingModule: TestingModule;
+          beforeEach(async () => {
+            testingModule = await customCreateTestingModule();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+      `,
+      options: [
+        {
+          closeAliases: [
+            {
+              kind: 'method',
+              name: 'createTestingModule',
+            },
+          ],
+        },
+      ],
+      errors: [
+        {
+          messageId: 'testModuleNotClosed',
         },
       ],
     },
