@@ -117,11 +117,11 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
     },
     {
       code: `
-        import { createTestingModule } from './test-utils';
+        import { customCreateTestingModule } from './test-utils';
         describe('Creates the testingModule using the function alias', () => {
           let testingModule: TestingModule;
           beforeEach(async () => {
-            testingModule = await createTestingModule();
+            testingModule = await customCreateTestingModule();
           });
           it('should be defined', () => {
             expect(testingModule).toBeDefined();
@@ -133,10 +133,10 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
       `,
       options: [
         {
-          closeAliases: [
+          createAliases: [
             {
-              kind: 'method',
-              name: 'createTestingModule',
+              kind: 'function',
+              name: 'customCreateTestingModule',
             },
           ],
         },
@@ -235,9 +235,9 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
       `,
       options: [
         {
-          closeAliases: [
+          createAliases: [
             {
-              kind: 'method',
+              kind: 'function',
               name: 'createTestingModule',
             },
           ],
@@ -249,5 +249,38 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
         },
       ],
     },
+    {
+      code: `
+        import { customCreateTestingModule } from './test-utils';
+        describe('Creates the testingModule using the function alias in the beforeEach scope', () => {
+          beforeEach(async () => {
+            const testingModule = await customCreateTestingModule();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'function',
+              name: 'customCreateTestingModule',
+            },
+          ],
+        },
+      ],
+      errors: [
+        {
+          messageId: 'testModuleNotClosed',
+        },
+      ],
+    },
   ],
+  // TODO: Add tests for the following scenarios:
+  // - Test module created (with custom function alias) in the beforeAll hook and closed in the afterEach hook
+  // - Test module created (with custom function alias) in the beforeEach hook and closed in the afterAll hook
+  // - Test module created (with custom method alias) in the beforeAll hook and closed in the afterEach hook
+  // - Test module created (with custom method alias) in the beforeEach hook and closed in the afterAll hook
 });

@@ -18,20 +18,22 @@ function typeOfHook(hookName: TestBeforeHooks | TestAfterHooks): HookType {
   return hookName.includes('All') ? 'all' : 'each';
 }
 
-type CloseAlias = {
+type Alias = {
   kind: 'function' | 'method';
   name: string;
 };
 
 export type Options = [
   {
-    closeAliases?: CloseAlias[];
+    closeAliases?: Alias[];
+    createAliases?: Alias[];
   },
 ];
 
 const defaultOptions: Options = [
   {
     closeAliases: [],
+    createAliases: [],
   },
 ];
 
@@ -181,13 +183,23 @@ export default createRule<Options, MessageIds>({
         node: TSESTree.CallExpression
       ) => {
         const calleeName = (node.callee as TSESTree.Identifier).name;
-        const functionAliases = context.options[0]?.closeAliases?.filter(
+        const closeFunctionAliases = context.options[0]?.closeAliases?.filter(
           (alias) => alias.kind === 'function'
         );
 
-        if (functionAliases?.some((alias) => alias.name === calleeName)) {
+        if (closeFunctionAliases?.some((alias) => alias.name === calleeName)) {
           testModuleClosed = true;
           closedInHook = afterHookContainingNode(node);
+        }
+
+        const createFunctionAliases = context.options[0]?.createAliases?.filter(
+          (alias) => alias.kind === 'function'
+        );
+
+        if (createFunctionAliases?.some((alias) => alias.name === calleeName)) {
+          testModuleCreated = true;
+          testingModuleCreatedPosition.start = node.loc.start;
+          testingModuleCreatedPosition.end = node.loc.end;
         }
       },
       'MemberExpression[property.type="Identifier"]': (
