@@ -211,7 +211,7 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
     {
       code: `
         import { testUtils } from './test-utils';
-        describe('Creates the testingModule using the method alias', () => {
+        describe('Creates the testingModule using the method alias (beforeEach)', () => {
           let testingModule: TestingModule;
           beforeEach(async () => {
             testingModule = await testUtils.create();
@@ -238,7 +238,7 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
     {
       code: `
         import { testUtils } from './test-utils';
-        describe('Creates the testingModule using the method alias', () => {
+        describe('Creates the testingModule using the method alias (beforeAll)', () => {
           let testingModule: TestingModule;
           beforeAll(async () => {
             testingModule = await testUtils.create();
@@ -265,7 +265,7 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
     {
       code: `
         import { testUtils } from './test-utils';
-        describe('Creates and closes the testingModule using the method alias', () => {
+        describe('Creates and closes the testingModule using the method alias (beforeEach)', () => {
           let testingModule: TestingModule;
           beforeEach(async () => {
             testingModule = await testUtils.create();
@@ -298,7 +298,7 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
     {
       code: `
         import { testUtils } from './test-utils';
-        describe('Creates the testingModule using the method alias', () => {
+        describe('Creates and closes the testingModule using the method alias (beforeAll)', () => {
           let testingModule: TestingModule;
           beforeAll(async () => {
             testingModule = await testUtils.create();
