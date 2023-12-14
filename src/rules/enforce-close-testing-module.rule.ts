@@ -116,18 +116,10 @@ export default createRule<Options, MessageIds>({
       'MemberExpression[object.name="Test"][property.name="createTestingModule"]':
         (node: TSESTree.MemberExpression) => {
           // Check under which hook the module was created
-          const callExpressions = traverser.getAllParentCallExpressions(node);
-          const callExpressionWithHook = callExpressions.find(
-            (expression) =>
-              ASTUtils.isIdentifier(expression.callee) &&
-              ['beforeAll', 'beforeEach'].includes(expression.callee.name)
-          );
-          if (
-            callExpressionWithHook &&
-            ASTUtils.isIdentifier(callExpressionWithHook.callee)
-          ) {
-            createdInHook = callExpressionWithHook.callee
-              .name as TestBeforeHooks;
+          const beforeHook = beforeHookContainingNode(node);
+
+          if (beforeHook) {
+            createdInHook = beforeHook;
           }
         },
       'MemberExpression[property.name="createNestApplication"]': (node) => {
@@ -204,17 +196,10 @@ export default createRule<Options, MessageIds>({
           testingModuleCreatedPosition.end = node.loc.end;
         }
 
-        const callExpressions = traverser.getAllParentCallExpressions(node);
-        const callExpressionWithHook = callExpressions.find(
-          (expression) =>
-            ASTUtils.isIdentifier(expression.callee) &&
-            ['beforeAll', 'beforeEach'].includes(expression.callee.name)
-        );
-        if (
-          callExpressionWithHook &&
-          ASTUtils.isIdentifier(callExpressionWithHook.callee)
-        ) {
-          createdInHook = callExpressionWithHook.callee.name as TestBeforeHooks;
+        const beforeHook = beforeHookContainingNode(node);
+
+        if (beforeHook) {
+          createdInHook = beforeHook;
         }
 
         if (
@@ -278,3 +263,21 @@ function afterHookContainingNode(
   return result;
 }
 
+function beforeHookContainingNode(
+  node: TSESTree.CallExpression | TSESTree.MemberExpression
+): TestBeforeHooks | undefined {
+  let result: TestBeforeHooks | undefined;
+  const callExpressions = traverser.getAllParentCallExpressions(node);
+  const callExpressionWithHook = callExpressions.find(
+    (expression) =>
+      ASTUtils.isIdentifier(expression.callee) &&
+      ['beforeAll', 'beforeEach'].includes(expression.callee.name)
+  );
+  if (
+    callExpressionWithHook &&
+    ASTUtils.isIdentifier(callExpressionWithHook.callee)
+  ) {
+    result = callExpressionWithHook.callee.name as TestBeforeHooks;
+  }
+  return result;
+}
