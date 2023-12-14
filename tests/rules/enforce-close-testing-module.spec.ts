@@ -341,6 +341,38 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
         },
       ],
     },
+    {
+      code: `
+        import { testUtils } from './test-utils';
+        describe('Creates the testingModule using the method alias in the beforeAll scope', () => {
+          let testingModule: TestingModule;
+          beforeAll(async () => {
+            testingModule = await testUtils.create();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+          afterEach(async () => {
+            await testingModule.close();
+          })
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'method',
+              name: 'create',
+            },
+          ],
+        },
+      ],
+      errors: [
+        {
+          messageId: 'testModuleClosedInWrongHook',
+        },
+      ],
+    },
   ],
   // TODO: Add tests for the following scenarios:
   // - Test module created (with custom method alias) in the beforeAll hook and closed in the afterEach hook

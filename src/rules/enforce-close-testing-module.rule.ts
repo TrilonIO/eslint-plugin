@@ -233,6 +233,39 @@ export default createRule<Options, MessageIds>({
           testModuleClosed = true;
           closedInHook = afterHookContainingNode(node);
         }
+
+        const createMethodAliases = context.options[0]?.createAliases?.filter(
+          (alias) => alias.kind === 'method'
+        );
+
+        if (createMethodAliases?.some((alias) => alias.name === methodName)) {
+          testModuleCreated = true;
+          testingModuleCreatedPosition.start = node.loc.start;
+          testingModuleCreatedPosition.end = node.loc.end;
+
+          const beforeHook = beforeHookContainingNode(node);
+
+          if (beforeHook) {
+            createdInHook = beforeHook;
+          }
+
+          if (
+            moduleClosedInWrongHook(
+              closedInHook,
+              createdInHook,
+              testModuleCreated
+            )
+          ) {
+            context.report({
+              node,
+              messageId: 'testModuleClosedInWrongHook',
+              data: {
+                created: createdInHook,
+                closed: closedInHook,
+              },
+            });
+          }
+        }
       },
       'Program:exit': (node) => {
         if (testModuleCreated && !testModuleClosed && !appModuleClosed) {
