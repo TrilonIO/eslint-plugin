@@ -142,6 +142,9 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
         },
       ],
     },
+    // TODO: Add tests for the following scenarios:
+    // - Test module created (with custom method alias) in the beforeEach hook and closed in the afterEach hook
+    // - Test module created (with custom method alias) in the beforeAll hook and closed in the afterAll hook
   ],
   invalid: [
     {
@@ -406,7 +409,4 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
       ],
     },
   ],
-  // TODO: Add tests for the following scenarios:
-  // - Test module created (with custom method alias) in the beforeAll hook and closed in the afterEach hook
-  // - Test module created (with custom method alias) in the beforeEach hook and closed in the afterAll hook
 });
