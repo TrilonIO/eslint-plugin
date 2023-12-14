@@ -192,6 +192,8 @@ export default createRule<Options, MessageIds>({
           closedInHook = afterHookContainingNode(node);
         }
 
+        closedInHook = afterHookContainingNode(node);
+
         const createFunctionAliases = context.options[0]?.createAliases?.filter(
           (alias) => alias.kind === 'function'
         );
@@ -200,6 +202,35 @@ export default createRule<Options, MessageIds>({
           testModuleCreated = true;
           testingModuleCreatedPosition.start = node.loc.start;
           testingModuleCreatedPosition.end = node.loc.end;
+        }
+
+        const callExpressions = traverser.getAllParentCallExpressions(node);
+        const callExpressionWithHook = callExpressions.find(
+          (expression) =>
+            ASTUtils.isIdentifier(expression.callee) &&
+            ['beforeAll', 'beforeEach'].includes(expression.callee.name)
+        );
+        if (
+          callExpressionWithHook &&
+          ASTUtils.isIdentifier(callExpressionWithHook.callee)
+        ) {
+          createdInHook = callExpressionWithHook.callee.name as TestBeforeHooks;
+        }
+
+        if (
+          closedInHook &&
+          createdInHook &&
+          typeOfHook(closedInHook) !== typeOfHook(createdInHook) &&
+          testModuleCreated
+        ) {
+          context.report({
+            node,
+            messageId: 'testModuleClosedInWrongHook',
+            data: {
+              created: createdInHook,
+              closed: closedInHook,
+            },
+          });
         }
       },
       'MemberExpression[property.type="Identifier"]': (
