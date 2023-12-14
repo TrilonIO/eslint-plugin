@@ -186,8 +186,6 @@ export default createRule<Options, MessageIds>({
           closedInHook = afterHookContainingNode(node);
         }
 
-        closedInHook = afterHookContainingNode(node);
-
         const createFunctionAliases = context.options[0]?.createAliases?.filter(
           (alias) => alias.kind === 'function'
         );
