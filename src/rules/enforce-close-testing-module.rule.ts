@@ -152,14 +152,14 @@ export default createRule<Options, MessageIds>({
           appModuleClosed = true;
         }
 
-        // Logic to check if module.close() is called in the wrong hook
         closedInHook = afterHookContainingNode(node);
 
         if (
-          closedInHook &&
-          createdInHook &&
-          typeOfHook(closedInHook) !== typeOfHook(createdInHook) &&
-          testModuleCreated
+          moduleClosedInWrongHook(
+            closedInHook,
+            createdInHook,
+            testModuleCreated
+          )
         ) {
           context.report({
             node,
@@ -205,10 +205,11 @@ export default createRule<Options, MessageIds>({
         }
 
         if (
-          closedInHook &&
-          createdInHook &&
-          typeOfHook(closedInHook) !== typeOfHook(createdInHook) &&
-          testModuleCreated
+          moduleClosedInWrongHook(
+            closedInHook,
+            createdInHook,
+            testModuleCreated
+          )
         ) {
           context.report({
             node,
@@ -247,6 +248,19 @@ export default createRule<Options, MessageIds>({
     };
   },
 });
+
+function moduleClosedInWrongHook(
+  closedInHook: TestAfterHooks | undefined,
+  createdInHook: TestBeforeHooks | undefined,
+  testModuleCreated: boolean
+) {
+  return (
+    closedInHook &&
+    createdInHook &&
+    typeOfHook(closedInHook) !== typeOfHook(createdInHook) &&
+    testModuleCreated
+  );
+}
 
 function afterHookContainingNode(
   node: TSESTree.CallExpression | TSESTree.MemberExpression
