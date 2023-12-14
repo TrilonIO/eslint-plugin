@@ -171,6 +171,8 @@ export default createRule<Options, MessageIds>({
           });
         }
       },
+      // Matches any function call to verify if one of the aliases functions was called
+      // e.g. `customClose();` or `customCreateModule()`
       'CallExpression[callee.type="Identifier"]': (
         node: TSESTree.CallExpression
       ) => {
@@ -218,6 +220,8 @@ export default createRule<Options, MessageIds>({
           });
         }
       },
+      // Matches any method call to verify if one of the aliases methods was called
+      // e.g. `object.customClose();` or `object.customCreateModule()`
       'MemberExpression[property.type="Identifier"]': (
         node: TSESTree.MemberExpression
       ) => {
