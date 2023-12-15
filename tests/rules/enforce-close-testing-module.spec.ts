@@ -87,6 +87,247 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
         });
       `,
     },
+    {
+      code: `
+        describe('Closes the testingModule using a custom function', () => {
+          let testingModule: TestingModule;
+          beforeEach(async () => {
+            testingModule = await Test.createTestingModule({
+              imports: [AppModule],
+            }).compile();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+        afterEach(async () => {
+          await customClose();
+        });
+      `,
+      options: [
+        {
+          closeAliases: [
+            {
+              kind: 'function',
+              name: 'customClose',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+        import { customCreateTestingModule } from './test-utils';
+        describe('Creates the testingModule using the function alias', () => {
+          let testingModule: TestingModule;
+          beforeEach(async () => {
+            testingModule = await customCreateTestingModule();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+        afterEach(async () => {
+          await testingModule.close();
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'function',
+              name: 'customCreateTestingModule',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+        import { customCreateTestingModule } from './test-utils';
+        describe('Creates and closes the testingModule using the function alias (beforeEach)', () => {
+          let testingModule: TestingModule;
+          beforeEach(async () => {
+            testingModule = await customCreateTestingModule();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+        afterEach(async () => {
+          await closeTestingModule(testingModule);
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'function',
+              name: 'customCreateTestingModule',
+            },
+          ],
+          closeAliases: [
+            {
+              kind: 'function',
+              name: 'closeTestingModule',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+        import { customCreateTestingModule } from './test-utils';
+        describe('Creates and closes the testingModule using the function alias (beforeAll)', () => {
+          let testingModule: TestingModule;
+          beforeAll(async () => {
+            testingModule = await customCreateTestingModule();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+        afterAll(async () => {
+          await closeTestingModule(testingModule);
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'function',
+              name: 'customCreateTestingModule',
+            },
+          ],
+          closeAliases: [
+            {
+              kind: 'function',
+              name: 'closeTestingModule',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+        import { testUtils } from './test-utils';
+        describe('Creates the testingModule using the method alias (beforeEach)', () => {
+          let testingModule: TestingModule;
+          beforeEach(async () => {
+            testingModule = await testUtils.create();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+        afterEach(async () => {
+          await testingModule.close();
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'method',
+              name: 'create',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+        import { testUtils } from './test-utils';
+        describe('Creates the testingModule using the method alias (beforeAll)', () => {
+          let testingModule: TestingModule;
+          beforeAll(async () => {
+            testingModule = await testUtils.create();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+        afterAll(async () => {
+          await testingModule.close();
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'method',
+              name: 'create',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+        import { testUtils } from './test-utils';
+        describe('Creates and closes the testingModule using the method alias (beforeEach)', () => {
+          let testingModule: TestingModule;
+          beforeEach(async () => {
+            testingModule = await testUtils.create();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+        afterEach(async () => {
+          await testUtils.close(testingModule);
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'method',
+              name: 'create',
+            },
+          ],
+          closeAliases: [
+            {
+              kind: 'method',
+              name: 'close',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      code: `
+        import { testUtils } from './test-utils';
+        describe('Creates and closes the testingModule using the method alias (beforeAll)', () => {
+          let testingModule: TestingModule;
+          beforeAll(async () => {
+            testingModule = await testUtils.create();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+        afterAll(async () => {
+          await testUtils.close(testingModule);
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'method',
+              name: 'create',
+            },
+          ],
+          closeAliases: [
+            {
+              kind: 'method',
+              name: 'close',
+            },
+          ],
+        },
+      ],
+    },
   ],
   invalid: [
     {
@@ -162,6 +403,191 @@ ruleTester.run('enforce-close-testing-module', enforceCloseTestingModuleRule, {
             created: 'beforeAll',
             closed: 'afterEach',
           },
+        },
+      ],
+    },
+    {
+      code: `
+        import { customCreateTestingModule } from './test-utils';
+        describe('Creates the testingModule using the function alias but does not close it', () => {
+          let testingModule: TestingModule;
+          beforeEach(async () => {
+            testingModule = await customCreateTestingModule();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'function',
+              name: 'createTestingModule',
+            },
+          ],
+        },
+      ],
+      errors: [
+        {
+          messageId: 'testModuleNotClosed',
+        },
+      ],
+    },
+    {
+      code: `
+        import { customCreateTestingModule } from './test-utils';
+        describe('Creates the testingModule using the function alias in the beforeEach scope', () => {
+          beforeEach(async () => {
+            const testingModule = await customCreateTestingModule();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'function',
+              name: 'customCreateTestingModule',
+            },
+          ],
+        },
+      ],
+      errors: [
+        {
+          messageId: 'testModuleNotClosed',
+        },
+      ],
+    },
+    {
+      code: `
+        import { customCreateTestingModule } from './test-utils';
+        describe('Creates the testingModule using the function alias in the beforeEach scope', () => {
+          let testingModule: TestingModule;
+          beforeAll(async () => {
+            testingModule = await customCreateTestingModule();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+          afterEach(async () => {
+            await testingModule.close();
+          })
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'function',
+              name: 'customCreateTestingModule',
+            },
+          ],
+        },
+      ],
+      errors: [
+        {
+          messageId: 'testModuleClosedInWrongHook',
+        },
+      ],
+    },
+    {
+      code: `
+        import { customCreateTestingModule } from './test-utils';
+        describe('Creates the testingModule using the function alias in the beforeEach scope', () => {
+          let testingModule: TestingModule;
+          beforeEach(async () => {
+            testingModule = await customCreateTestingModule();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+          afterAll(async () => {
+            await testingModule.close();
+          })
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'function',
+              name: 'customCreateTestingModule',
+            },
+          ],
+        },
+      ],
+      errors: [
+        {
+          messageId: 'testModuleClosedInWrongHook',
+        },
+      ],
+    },
+    {
+      code: `
+        import { testUtils } from './test-utils';
+        describe('Creates the testingModule using the method alias in the beforeAll scope', () => {
+          let testingModule: TestingModule;
+          beforeAll(async () => {
+            testingModule = await testUtils.create();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+          afterEach(async () => {
+            await testingModule.close();
+          })
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'method',
+              name: 'create',
+            },
+          ],
+        },
+      ],
+      errors: [
+        {
+          messageId: 'testModuleClosedInWrongHook',
+        },
+      ],
+    },
+    {
+      code: `
+        import { testUtils } from './test-utils';
+        describe('Creates the testingModule using the method alias in the beforeEach scope', () => {
+          let testingModule: TestingModule;
+          beforeEach(async () => {
+            testingModule = await testUtils.create();
+          });
+          it('should be defined', () => {
+            expect(testingModule).toBeDefined();
+          });
+          afterAll(async () => {
+            await testingModule.close();
+          })
+        });
+      `,
+      options: [
+        {
+          createAliases: [
+            {
+              kind: 'method',
+              name: 'create',
+            },
+          ],
+        },
+      ],
+      errors: [
+        {
+          messageId: 'testModuleClosedInWrongHook',
         },
       ],
     },
