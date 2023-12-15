@@ -68,7 +68,7 @@ export default createRule<Options, MessageIds>({
           },
         },
       },
-    ], // no options
+    ],
     messages: {
       testModuleNotClosed:
         'A Testing Module was created but not closed, which can cause memory leaks',
