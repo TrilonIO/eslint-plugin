@@ -19,10 +19,20 @@ const ruleTester = new RuleTester({
 
 ruleTester.run('check-inject-decorator', checkInjectDecorator, {
   valid: [
+    {
+      code: `
+      const FOO_SERVICE = Symbol('FOO_SERVICE');
+      class FooBarController {      
+        constructor(
+          @Inject(FOO_SERVICE)
+          private readonly fooService: FooService,
+        ) {}
+      }
+      `,
+    },
     // TODO: add following tests:
-    // 1 - 🆗 Type is a class and was injected in the constructor
-    // 2 - 🆗 Token differs from type
-    // 3 - 🆗 Token duplicates type, but class properties are not injected automatically
+    // 🆗 Type is a class and was injected in the constructor
+    // 🆗 Token duplicates type, but class properties are not injected automatically
   ],
   invalid: [
     {

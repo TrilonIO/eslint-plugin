@@ -1,4 +1,4 @@
-import { ESLintUtils } from '@typescript-eslint/utils';
+import { ASTUtils, ESLintUtils, type TSESTree } from '@typescript-eslint/utils';
 
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://eslint.org/docs/latest/rules/${name}`
@@ -29,16 +29,35 @@ export default createRule({
   },
   defaultOptions,
   create(context) {
+    let tokenName: string | undefined;
     return {
-      // Matches code that defines a variable of type TestingModule
-      // e.g. `let testingModule: TestingModule;`
-      'Program:exit': (node) => {
-        context.report({
-          node,
-          messageId: 'tokenDuplicatesType',
-          loc: node.loc,
-        });
+      // Matches: @Inject(FOO_SERVICE)
+      'Decorator[expression.callee.name="Inject"]': (
+        node: TSESTree.Decorator
+      ) => {
+        const injectedToken = (node.expression as TSESTree.CallExpression)
+          .arguments[0];
+
+        if (ASTUtils.isIdentifier(injectedToken)) {
+          tokenName = injectedToken.name;
+        }
       },
+
+      // Matches: constructor(@Inject(FOO_SERVICE) private readonly >>fooService<<: FooService)
+      'TSParameterProperty > Identifier[typeAnnotation.typeAnnotation.type="TSTypeReference"]':
+        (node: TSESTree.Identifier) => {
+          const typeName = (
+            node.typeAnnotation?.typeAnnotation as TSESTree.TSTypeReference
+          ).typeName;
+
+          if (ASTUtils.isIdentifier(typeName) && typeName.name === tokenName) {
+            context.report({
+              node,
+              messageId: 'tokenDuplicatesType',
+              loc: node.loc,
+            });
+          }
+        },
     };
   },
 });
