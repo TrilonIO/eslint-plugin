@@ -30,8 +30,19 @@ ruleTester.run('check-inject-decorator', checkInjectDecorator, {
       }
       `,
     },
+    {
+      code: `
+      class FooClass {
+        foo: string;
+      }
+      class FooBarController {      
+        constructor(
+          private readonly fooService: FooClass,
+        ) {}
+      }
+      `,
+    },
     // TODO: add following tests:
-    // 🆗 Type is a class and was injected in the constructor
     // 🆗 Token duplicates type, but class properties are not injected automatically
   ],
   invalid: [
@@ -50,8 +61,24 @@ ruleTester.run('check-inject-decorator', checkInjectDecorator, {
         },
       ],
     },
+    {
+      code: `
+      interface FooInterface {
+        foo: string;
+      }
+      class FooBarController {      
+        constructor(
+          private readonly fooService: FooInterface,
+        ) {}
+      }
+      `,
+      errors: [
+        {
+          messageId: 'typeIsInterface',
+        },
+      ],
+    },
     // TODO: add following tests:
-    // 1 - 🚫 Type is an interface and cannot be injected
     // 2 - private readonly fooService: FooService; // ⚠️ Did you want to `@Inject(FooService)`?
   ],
 });

@@ -1,5 +1,5 @@
 import { ASTUtils, ESLintUtils, type TSESTree } from '@typescript-eslint/utils';
-
+import * as ts from 'typescript';
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://eslint.org/docs/latest/rules/${name}`
 );
@@ -54,6 +54,19 @@ export default createRule({
             context.report({
               node,
               messageId: 'tokenDuplicatesType',
+              loc: node.loc,
+            });
+          }
+
+          const services = ESLintUtils.getParserServices(context);
+          const type = services.getTypeAtLocation(node);
+          if (
+            type.isClassOrInterface() &&
+            !(type.symbol.flags & ts.SymbolFlags.Class)
+          ) {
+            context.report({
+              node,
+              messageId: 'typeIsInterface',
               loc: node.loc,
             });
           }
