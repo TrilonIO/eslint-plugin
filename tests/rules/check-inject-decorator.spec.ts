@@ -96,6 +96,23 @@ ruleTester.run('check-inject-decorator', checkInjectDecorator, {
         },
       ],
     },
+    {
+      code: `
+      import { FooInterface } from './foo.interface';
+      class BarService {      
+        @Inject(FOO_SERVICE)
+        private readonly fooService: FooInterface
+        constructor(
+          private readonly fooService2: FooInterface,
+        ) {}
+      }
+      `,
+      errors: [
+        {
+          messageId: 'typeIsInterface',
+        },
+      ],
+    },
     // TODO
     // The scenario below might not be desirable for every class, since not every class is supposed to be injectable and hydrated by Nest DI.
     // private readonly fooService: FooService; // ⚠️ Did you want to `@Inject(FooService)`?
