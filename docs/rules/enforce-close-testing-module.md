@@ -15,15 +15,16 @@ This rule accepts an object with two properties: `createAliases` and `closeAlias
 
 ```json
 {
-  "nestjs/close-testing-modules": ["error", {
-    "createAliases": [
-      { "kind": "function", "name": "customCreateTestingModule" },
-      { "kind": "method", "name": "alternativeCreateMethod" }
-    ],
-    "closeAliases": [
-      { "kind": "method", "name": "customCloseMethod" }
-    ]
-  }]
+  "nestjs/close-testing-modules": [
+    "error",
+    {
+      "createAliases": [
+        { "kind": "function", "name": "customCreateTestingModule" },
+        { "kind": "method", "name": "alternativeCreateMethod" }
+      ],
+      "closeAliases": [{ "kind": "method", "name": "customCloseMethod" }]
+    }
+  ]
 }
 ```
 
@@ -106,7 +107,7 @@ describe('Creates and closes the appModule using custom functions', () => {
   let app: INestApplication;
   beforeEach(async () => {
     // defined via the "createAliases" option as { kind: 'function', name: 'createTestingModule' }
-    const testingModule = await createTestingModule(); 
+    const testingModule = await createTestingModule();
     app = testingModule.createNestApplication();
   });
 
@@ -116,7 +117,7 @@ describe('Creates and closes the appModule using custom functions', () => {
 
   afterEach(async () => {
     // defined via the "closeAliases" option as { kind: 'function', name: 'closeTestingModule' }
-    await closeTestingModule(testingModule); 
+    await closeTestingModule(testingModule);
   });
 });
 
@@ -124,7 +125,7 @@ describe('Creates and closes the appModule using custom methods', () => {
   let app: INestApplication;
   beforeEach(async () => {
     // defined via the "createAliases" option as { kind: 'method', name: 'createTestingModule' }
-    const testingModule = await testUtils.createTestingModule(); 
+    const testingModule = await testUtils.createTestingModule();
     app = testingModule.createNestApplication();
   });
 
@@ -134,7 +135,7 @@ describe('Creates and closes the appModule using custom methods', () => {
 
   afterEach(async () => {
     // defined via the "closeAliases" option as { kind: 'method', name: 'close' }
-    await testUtils.close(testingModule); 
+    await testUtils.close(testingModule);
   });
 });
 ```

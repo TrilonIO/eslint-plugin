@@ -42,8 +42,14 @@ ruleTester.run('check-inject-decorator', checkInjectDecorator, {
       }
       `,
     },
-    // TODO: add following tests:
-    // 🆗 Token duplicates type, but class properties are not injected automatically
+    {
+      code: `
+      class FooService {
+        @Inject(Reflector)
+        private readonly reflector: Reflector;
+      }
+      `,
+    },
   ],
   invalid: [
     {
@@ -78,7 +84,8 @@ ruleTester.run('check-inject-decorator', checkInjectDecorator, {
         },
       ],
     },
-    // TODO: add following tests:
-    // 2 - private readonly fooService: FooService; // ⚠️ Did you want to `@Inject(FooService)`?
+    // TODO
+    // The scenario below might not be desirable for every class, since not every class is supposed to be injectable and hydrated by Nest DI.
+    // private readonly fooService: FooService; // ⚠️ Did you want to `@Inject(FooService)`?
   ],
 });
