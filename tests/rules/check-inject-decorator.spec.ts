@@ -50,6 +50,18 @@ ruleTester.run('check-inject-decorator', checkInjectDecorator, {
       }
       `,
     },
+    {
+      code: `
+      import { INTERFACE_TOKEN } from './foo.interface.provider';
+      interface FooInterface { }
+      class FooService {
+        constructor(
+          @Inject(INTERFACE_TOKEN)
+          private readonly secondInterface: FooInterface
+        ) {}
+      }
+      `,
+    },
   ],
   invalid: [
     {

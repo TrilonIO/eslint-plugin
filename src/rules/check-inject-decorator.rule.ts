@@ -1,5 +1,4 @@
 import { ASTUtils, ESLintUtils, type TSESTree } from '@typescript-eslint/utils';
-import * as ts from 'typescript';
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://eslint.org/docs/latest/rules/${name}`
 );
@@ -29,7 +28,7 @@ export default createRule({
   },
   defaultOptions,
   create(context) {
-    let tokenName: string | undefined;
+    let injectedTokenName: string | undefined;
     return {
       // Matches: @Inject(FOO_SERVICE)
       'Decorator[expression.callee.name="Inject"]': (
@@ -39,7 +38,7 @@ export default createRule({
           .arguments[0];
 
         if (ASTUtils.isIdentifier(injectedToken)) {
-          tokenName = injectedToken.name;
+          injectedTokenName = injectedToken.name;
         }
       },
 
@@ -50,7 +49,10 @@ export default createRule({
             node.typeAnnotation?.typeAnnotation as TSESTree.TSTypeReference
           ).typeName;
 
-          if (ASTUtils.isIdentifier(typeName) && typeName.name === tokenName) {
+          if (
+            ASTUtils.isIdentifier(typeName) &&
+            typeName.name === injectedTokenName
+          ) {
             context.report({
               node,
               messageId: 'tokenDuplicatesType',
@@ -61,8 +63,9 @@ export default createRule({
           const services = ESLintUtils.getParserServices(context);
           const type = services.getTypeAtLocation(node);
           if (
+            !type.isClass() &&
             type.isClassOrInterface() &&
-            !(type.symbol.flags & ts.SymbolFlags.Class)
+            !injectedTokenName
           ) {
             context.report({
               node,
