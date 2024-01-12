@@ -16,7 +16,7 @@
     "yarn": ">=4.0.2"
   },
   "scripts": {
-    "prepublish": "tsc",
+    "prepare": "tsc",
     "tsc": "rimraf ./lib && tsc -p tsconfig.build.json && tsc-alias",
     "test": "tsx --import ./tests/global.setup.js --test tests/**/*.spec.ts",
     "format": "prettier --write .",
