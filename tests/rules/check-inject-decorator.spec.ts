@@ -113,8 +113,5 @@ ruleTester.run('check-inject-decorator', checkInjectDecorator, {
         },
       ],
     },
-    // TODO
-    // The scenario below might not be desirable for every class, since not every class is supposed to be injectable and hydrated by Nest DI.
-    // private readonly fooService: FooService; // ⚠️ Did you want to `@Inject(FooService)`?
   ],
 });
