@@ -1,4 +1,9 @@
-import { ASTUtils, ESLintUtils, type TSESTree } from '@typescript-eslint/utils';
+import {
+  ASTUtils,
+  AST_NODE_TYPES,
+  ESLintUtils,
+  type TSESTree,
+} from '@typescript-eslint/utils';
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://eslint.org/docs/latest/rules/${name}`
 );
@@ -28,20 +33,7 @@ export default createRule({
   },
   defaultOptions,
   create(context) {
-    let injectedTokenName: string | undefined;
     return {
-      // Matches: @Inject(FOO_SERVICE)
-      'Decorator[expression.callee.name="Inject"]': (
-        node: TSESTree.Decorator
-      ) => {
-        const injectedToken = (node.expression as TSESTree.CallExpression)
-          .arguments[0];
-
-        if (ASTUtils.isIdentifier(injectedToken)) {
-          injectedTokenName = injectedToken.name;
-        }
-      },
-
       // Matches: constructor(@Inject(FOO_SERVICE) private readonly >>fooService<<: FooService)
       'TSParameterProperty > Identifier[typeAnnotation.typeAnnotation.type="TSTypeReference"]':
         (node: TSESTree.Identifier) => {
@@ -49,9 +41,25 @@ export default createRule({
             node.typeAnnotation?.typeAnnotation as TSESTree.TSTypeReference
           ).typeName;
 
+          const injectDecorator = (
+            node.parent as TSESTree.TSParameterProperty
+          ).decorators.find(
+            (decorator) =>
+              decorator.expression.type === AST_NODE_TYPES.CallExpression &&
+              ASTUtils.isIdentifier(decorator.expression.callee) &&
+              decorator.expression.callee.name === 'Inject'
+          );
+
+          const injectedIdentifier = (
+            injectDecorator?.expression as TSESTree.CallExpression
+          )?.arguments[0];
+
+          const injectedToken = (injectedIdentifier as TSESTree.Identifier)
+            ?.name;
+
           if (
             ASTUtils.isIdentifier(typeName) &&
-            typeName.name === injectedTokenName
+            typeName.name === injectedToken
           ) {
             context.report({
               node,
@@ -62,11 +70,8 @@ export default createRule({
 
           const services = ESLintUtils.getParserServices(context);
           const type = services.getTypeAtLocation(node);
-          if (
-            !type.isClass() &&
-            type.isClassOrInterface() &&
-            !injectedTokenName
-          ) {
+
+          if (!type.isClass() && type.isClassOrInterface() && !injectedToken) {
             context.report({
               node,
               messageId: 'typeIsInterface',

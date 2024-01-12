@@ -98,7 +98,7 @@ ruleTester.run('check-inject-decorator', checkInjectDecorator, {
     },
     {
       code: `
-      import { FooInterface } from './foo.interface';
+      interface FooInterface { };
       class BarService {      
         @Inject(FOO_SERVICE)
         private readonly fooService: FooInterface
