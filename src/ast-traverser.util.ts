@@ -1,5 +1,5 @@
 import type { TSESTree } from '@typescript-eslint/utils';
-import { AST_NODE_TYPES } from '@typescript-eslint/utils';
+import { ASTUtils, AST_NODE_TYPES } from '@typescript-eslint/utils';
 
 export function getAllParentNodesOfType<TNode extends TSESTree.Node>(
   node: TSESTree.Node,
@@ -54,4 +54,23 @@ export function firstAssignmentExpressionInParentChain(
     node,
     AST_NODE_TYPES.AssignmentExpression
   );
+}
+
+export function injectDecoratorFor(node: TSESTree.Node) {
+  return (node as TSESTree.TSParameterProperty)?.decorators?.find(
+    (decorator) =>
+      decorator.expression.type === AST_NODE_TYPES.CallExpression &&
+      ASTUtils.isIdentifier(decorator.expression.callee) &&
+      decorator.expression.callee.name === 'Inject'
+  );
+}
+
+export function injectedTokenFor(decoratorNode?: TSESTree.Decorator) {
+  const injectedIdentifier = (
+    decoratorNode?.expression as TSESTree.CallExpression
+  )?.arguments[0];
+
+  const injectedToken = (injectedIdentifier as TSESTree.Identifier)?.name;
+
+  return injectedToken;
 }

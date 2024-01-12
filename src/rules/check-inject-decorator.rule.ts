@@ -1,9 +1,6 @@
-import {
-  ASTUtils,
-  AST_NODE_TYPES,
-  ESLintUtils,
-  type TSESTree,
-} from '@typescript-eslint/utils';
+import { ASTUtils, ESLintUtils, type TSESTree } from '@typescript-eslint/utils';
+import * as traverser from '../ast-traverser.util';
+
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://eslint.org/docs/latest/rules/${name}`
 );
@@ -41,21 +38,8 @@ export default createRule({
             node.typeAnnotation?.typeAnnotation as TSESTree.TSTypeReference
           ).typeName;
 
-          const injectDecorator = (
-            node.parent as TSESTree.TSParameterProperty
-          ).decorators.find(
-            (decorator) =>
-              decorator.expression.type === AST_NODE_TYPES.CallExpression &&
-              ASTUtils.isIdentifier(decorator.expression.callee) &&
-              decorator.expression.callee.name === 'Inject'
-          );
-
-          const injectedIdentifier = (
-            injectDecorator?.expression as TSESTree.CallExpression
-          )?.arguments[0];
-
-          const injectedToken = (injectedIdentifier as TSESTree.Identifier)
-            ?.name;
+          const injectDecorator = traverser.injectDecoratorFor(node.parent);
+          const injectedToken = traverser.injectedTokenFor(injectDecorator);
 
           if (
             ASTUtils.isIdentifier(typeName) &&
