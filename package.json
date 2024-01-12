@@ -1,9 +1,9 @@
 {
-  "name": "eslint-plugin",
-  "version": "1.0.0",
+  "name": "@trilon/eslint-plugin",
+  "version": "0.0.1",
   "description": "Official Trilon Eslint Plugin",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "files": [
     "lib/**/*",
@@ -16,6 +16,7 @@
     "yarn": ">=4.0.2"
   },
   "scripts": {
+    "prepublish": "tsc",
     "tsc": "rimraf ./lib && tsc -p tsconfig.build.json && tsc-alias",
     "test": "tsx --import ./tests/global.setup.js --test tests/**/*.spec.ts",
     "format": "prettier --write .",
