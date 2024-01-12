@@ -2,5 +2,5 @@
 .pnp.*
 !.yarn/releases
 !.yarn/plugins
-dist
+lib
 node_modules
