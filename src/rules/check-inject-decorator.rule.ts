@@ -38,8 +38,8 @@ export default createRule({
             node.typeAnnotation?.typeAnnotation as TSESTree.TSTypeReference
           ).typeName;
 
-          const injectDecorator = traverser.injectDecoratorFor(node.parent);
-          const injectedToken = traverser.injectedTokenFor(injectDecorator);
+          const injectDecorator = traverser.getInjectDecoratorFor(node.parent);
+          const injectedToken = traverser.getInjectedTokenFor(injectDecorator);
 
           if (
             ASTUtils.isIdentifier(typeName) &&

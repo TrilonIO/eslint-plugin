@@ -56,7 +56,7 @@ export function firstAssignmentExpressionInParentChain(
   );
 }
 
-export function injectDecoratorFor(node: TSESTree.Node) {
+export function getInjectDecoratorFor(node: TSESTree.Node) {
   return (node as TSESTree.TSParameterProperty)?.decorators?.find(
     (decorator) =>
       decorator.expression.type === AST_NODE_TYPES.CallExpression &&
@@ -65,7 +65,7 @@ export function injectDecoratorFor(node: TSESTree.Node) {
   );
 }
 
-export function injectedTokenFor(decoratorNode?: TSESTree.Decorator) {
+export function getInjectedTokenFor(decoratorNode?: TSESTree.Decorator) {
   const injectedIdentifier = (
     decoratorNode?.expression as TSESTree.CallExpression
   )?.arguments[0];
