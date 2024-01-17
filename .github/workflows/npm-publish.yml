@@ -27,6 +27,7 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
+          scope: '@trilon'
       - run: yarn install --frozen-lockfile
       - run: yarn npm publish
         env:
