@@ -1,6 +1,6 @@
 {
   "name": "@trilon/eslint-plugin",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Official Trilon Eslint Plugin",
   "type": "commonjs",
   "main": "./lib/index.js",
