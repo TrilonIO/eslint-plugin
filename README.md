@@ -1,4 +1,4 @@
-# Trilon eslint-plugin
+# Trilon ESLint Plugin
 
 [![Apache-2.0 license](https://img.shields.io/badge/license-Apache-blue.svg?style=for-the-badge&color=e51384)](/LICENSE) 
 
@@ -25,7 +25,7 @@ At Trilon, our goal is to help elevate teams - giving them the push they need to
 
 As part of that, we focus on developing tools that make **your** dev experience easier, enjoyable, and safer.
 
-The official Trilon Eslint Plugin is part of that toolbelt to help your team to thrive, applying best practices for NestJS, curated by our key contributors and core team.
+The official Trilon ESLint Plugin is part of that toolbelt to help your team to thrive, applying best practices for NestJS, curated by our key contributors and core team.
 
 ## Installation
 
