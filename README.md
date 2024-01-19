@@ -1,6 +1,6 @@
 # Trilon eslint-plugin
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge&color=e51384)](/LICENSE) 
+[![Apache-2.0 license](https://img.shields.io/badge/license-Apache-blue.svg?style=for-the-badge&color=e51384)](/LICENSE) 
 
 
 <!--[![NPM Downloads](https://img.shields.io/npm/dt/@trilon/ng-universal.svg?color=b31ae7&style=for-the-badge)](https://www.npmjs.com/@trilon/ng-universal)-->
