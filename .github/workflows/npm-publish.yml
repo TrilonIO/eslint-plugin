@@ -29,6 +29,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
           scope: '@trilon'
       - run: yarn install --frozen-lockfile
-      - run: yarn npm publish
+      - run: yarn npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
