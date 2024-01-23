@@ -34,7 +34,7 @@ ruleTester.run('detect-circular-reference', detectCircularReferenceRule, {
     {
       code: `
       @Module({
-        imports: [CatsModule], // ⚠️ Circular-dependency detected
+        imports: [CatsModule],
       })
       export class CommonModule {}
     `,
@@ -77,18 +77,19 @@ ruleTester.run('detect-circular-reference', detectCircularReferenceRule, {
     //     },
     //   ],
     // },
-    // {
-    //   code: `
-    //   @Module({
-    //     imports: [forwardRef(() => CatsModule)], // ⚠️ Circular-dependency detected
-    //   })
-    //   export class CommonModule {}
-    //   `,
-    //   errors: [
-    //     {
-    //       messageId: 'moduleCircularDependency',
-    //     },
-    //   ],
-    // },
+    {
+      code: `
+      import { forwardRef } from '@nestjs/common'
+      @Module({
+        imports: [forwardRef(() => CatsModule)], // ⚠️ Circular-dependency detected
+      })
+      export class CommonModule {}
+      `,
+      errors: [
+        {
+          messageId: 'moduleCircularDependency',
+        },
+      ],
+    },
   ],
 });
