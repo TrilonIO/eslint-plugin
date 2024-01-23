@@ -59,24 +59,24 @@ ruleTester.run('detect-circular-reference', detectCircularReferenceRule, {
         },
       ],
     },
-    // {
-    //   code: `
-    //   import { forwardRef as renamedForwardRef } from '@nestjs/common';
+    {
+      code: `
+      import { forwardRef as renamedForwardRef } from '@nestjs/common';
 
-    //   @Injectable()
-    //   export class CatsService {
-    //     constructor(
-    //       @Inject(renamedForwardRef(() => CommonService)) // ⚠️ Circular-dependency detected
-    //       private commonService: CommonService,
-    //     ) {}
-    //   }
-    //   `,
-    //   errors: [
-    //     {
-    //       messageId: 'serviceCircularDependency',
-    //     },
-    //   ],
-    // },
+      @Injectable()
+      export class CatsService {
+        constructor(
+          @Inject(renamedForwardRef(() => CommonService)) // ⚠️ Circular-dependency detected
+          private commonService: CommonService,
+        ) {}
+      }
+      `,
+      errors: [
+        {
+          messageId: 'serviceCircularDependency',
+        },
+      ],
+    },
     {
       code: `
       import { forwardRef } from '@nestjs/common'

@@ -32,14 +32,31 @@ export default createRule<unknown[], MessageIds>({
   },
   defaultOptions,
   create(context) {
+    let forwardRefName: string = 'forwardRef';
     return {
-      'CallExpression > Identifier[name="forwardRef"]': (
-        node: TSESTree.Identifier & {
-          parent: TSESTree.CallExpression;
-          name: 'forwardRef';
+      'ImportDeclaration > ImportSpecifier[imported.name="forwardRef"]': (
+        node: TSESTree.ImportSpecifier & {
+          parent: TSESTree.ImportDeclaration;
+          imported: TSESTree.Identifier & {
+            source: TSESTree.Literal;
+          };
         }
       ) => {
-        if (isNodeWithinImportsArray(node.parent)) {
+        if (node.parent?.source.value === '@nestjs/common') {
+          forwardRefName = node.local.name;
+        }
+      },
+
+      'CallExpression > Identifier': (
+        node: TSESTree.Identifier & {
+          parent: TSESTree.CallExpression;
+        }
+      ) => {
+        if (node.name !== forwardRefName) {
+          return;
+        }
+
+        if (isNodeWithinImportsArray(node.parent, forwardRefName)) {
           return context.report({
             messageId: 'moduleCircularDependency',
             node,
@@ -57,23 +74,29 @@ export default createRule<unknown[], MessageIds>({
   },
 });
 
-function isNodeWithinImportsArray(node: TSESTree.CallExpression): boolean {
+function isNodeWithinImportsArray(
+  node: TSESTree.CallExpression,
+  forwardRefName: string
+): boolean {
   return !!(
     node.parent?.type === AST_NODE_TYPES.ArrayExpression &&
-    node.parent?.elements.find(isForwardRefExpression)
+    node.parent?.elements.find((element) =>
+      isForwardRefExpression(element, forwardRefName)
+    )
   );
 }
 
 function isForwardRefExpression(
-  node: TSESTree.Expression | null | TSESTree.SpreadElement
+  node: TSESTree.Expression | null | TSESTree.SpreadElement,
+  forwardRefName: string
 ): node is TSESTree.CallExpression & {
   callee: TSESTree.Identifier & {
-    name: 'forwardRef';
+    name: string;
   };
 } {
   return (
     node?.type === AST_NODE_TYPES.CallExpression &&
     node?.callee.type === AST_NODE_TYPES.Identifier &&
-    node?.callee.name === 'forwardRef'
+    node?.callee.name === forwardRefName
   );
 }
