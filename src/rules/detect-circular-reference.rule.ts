@@ -36,12 +36,9 @@ export default createRule<unknown[], MessageIds>({
       'CallExpression > Identifier[name="forwardRef"]': (
         node: TSESTree.Identifier & {
           parent: TSESTree.CallExpression;
+          name: 'forwardRef';
         }
       ) => {
-        if (node?.name !== 'forwardRef') {
-          return;
-        }
-
         if (isNodeWithinImportsArray(node.parent)) {
           return context.report({
             messageId: 'moduleCircularDependency',
