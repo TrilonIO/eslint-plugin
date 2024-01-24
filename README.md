@@ -50,7 +50,7 @@ The "recommended" preset contains the rules listed below. If you need custom con
 | ------------------------------------------------------------------------------------ | -------------------------------------------------------------- | ----------- |
 | [`@trilon/enforce-close-testing-module`](docs/rules/enforce-close-testing-module.md) | Ensures NestJS testing modules are closed properly after tests | ✅          |
 | [`@trilon/check-inject-decorator`](docs/rules/check-inject-decorator.md)             | Detects incorrect usage of `@Inject(TOKEN)` decorator          | ✅          |
-
+| [`@trilon/detect-circular-reference`](docs/rules/detect-circular-reference.md)       | Detects usage of `forwardRef()` method                         | ✅          |
 ---
 
 # Trilon Consulting 
