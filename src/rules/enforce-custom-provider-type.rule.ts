@@ -1,4 +1,9 @@
-import { ESLintUtils } from '@typescript-eslint/utils';
+import {
+  ASTUtils,
+  AST_NODE_TYPES,
+  ESLintUtils,
+  type TSESTree,
+} from '@typescript-eslint/utils';
 
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://eslint.org/docs/latest/rules/${name}`
@@ -45,8 +50,71 @@ export default createRule<Options, MessageIds>({
   },
   defaultOptions,
   create(context) {
+    const options = context.options[0] || defaultOptions[0];
+    const preferredType = options.prefer;
     return {
-      'Program:exit': (node) => {},
+      'Identifier[typeAnnotation.typeAnnotation.type="TSTypeReference"]': (
+        node: TSESTree.Identifier
+      ) => {
+        const typeName = (
+          node.typeAnnotation?.typeAnnotation as TSESTree.TSTypeReference
+        ).typeName;
+
+        if (ASTUtils.isIdentifier(typeName) && typeName.name === 'Provider') {
+          const providerType = getProviderType(node);
+          if (providerType && providerType !== preferredType) {
+            context.report({
+              node,
+              messageId: 'providerTypeMismatch',
+              data: {
+                preferred: preferredType,
+              },
+            });
+          }
+        }
+      },
     };
   },
 });
+
+function getProviderType(node: TSESTree.Identifier): ProviderType | undefined {
+  const parent = node.parent;
+
+  if (ASTUtils.isVariableDeclarator(parent)) {
+    const init = parent.init;
+    let type: ProviderType | undefined;
+    if (init?.type === AST_NODE_TYPES.ObjectExpression) {
+      const properties = init.properties;
+      for (const property of properties) {
+        if (
+          property.type === AST_NODE_TYPES.Property &&
+          ASTUtils.isIdentifier(property.key) &&
+          property.key.name === 'useFactory'
+        ) {
+          type = 'factory';
+          break;
+        }
+
+        if (
+          property.type === AST_NODE_TYPES.Property &&
+          ASTUtils.isIdentifier(property.key) &&
+          property.key.name === 'useClass'
+        ) {
+          type = 'class';
+          break;
+        }
+
+        if (
+          property.type === AST_NODE_TYPES.Property &&
+          ASTUtils.isIdentifier(property.key) &&
+          property.key.name === 'useValue'
+        ) {
+          type = 'value';
+          break;
+        }
+      }
+    }
+
+    return type;
+  }
+}

@@ -33,5 +33,25 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       ],
     },
   ],
-  invalid: [],
+  invalid: [
+    {
+      code: `
+      import { Provider } from '@nestjs/common';
+      const customValueProvider: Provider = {
+        provide: 'TOKEN',
+        useValue: 'some-value' // ⚠️ provider is not of type "factory"
+      }
+      `,
+      options: [
+        {
+          prefer: 'factory',
+        },
+      ],
+      errors: [
+        {
+          messageId: 'providerTypeMismatch',
+        },
+      ],
+    },
+  ],
 });
