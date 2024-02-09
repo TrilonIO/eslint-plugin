@@ -53,5 +53,49 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
         },
       ],
     },
+    {
+      code: `
+      import { Provider } from '@nestjs/common';
+      import { SomeClass } from './some-class';
+      const customValueProvider: Provider = {
+        provide: 'TOKEN',
+        useClass: SomeClass // ⚠️ provider is not of type "factory"
+      }
+      `,
+      options: [
+        {
+          prefer: 'factory',
+        },
+      ],
+      errors: [
+        {
+          messageId: 'providerTypeMismatch',
+        },
+      ],
+    },
+    {
+      code: `
+      import { Provider } from '@nestjs/common';
+      import { EXISTING_TOKEN } from './token';
+      const customValueProvider: Provider = {
+        provide: 'TOKEN',
+        useExisting: EXISTING_TOKEN // ⚠️ provider is not of type "factory"
+      }
+      `,
+      options: [
+        {
+          prefer: 'factory',
+        },
+      ],
+      errors: [
+        {
+          messageId: 'providerTypeMismatch',
+        },
+      ],
+    },
+    // TODO
+    // Test for when the Provider type is not imported from '@nestjs/common'
+    // Test for when the Provider type was renamed
+    // Test for when the Provider type is different from the one defined in the configuration
   ],
 });

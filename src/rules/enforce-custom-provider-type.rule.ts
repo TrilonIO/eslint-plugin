@@ -9,7 +9,7 @@ const createRule = ESLintUtils.RuleCreator(
   (name) => `https://eslint.org/docs/latest/rules/${name}`
 );
 
-type ProviderType = 'class' | 'factory' | 'value';
+type ProviderType = 'class' | 'factory' | 'value' | 'existing';
 
 export type Options = [
   {
@@ -110,6 +110,15 @@ function getProviderType(node: TSESTree.Identifier): ProviderType | undefined {
           property.key.name === 'useValue'
         ) {
           type = 'value';
+          break;
+        }
+
+        if (
+          property.type === AST_NODE_TYPES.Property &&
+          ASTUtils.isIdentifier(property.key) &&
+          property.key.name === 'useExisting'
+        ) {
+          type = 'existing';
           break;
         }
       }
