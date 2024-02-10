@@ -52,7 +52,21 @@ export default createRule<Options, MessageIds>({
   create(context) {
     const options = context.options[0] || defaultOptions[0];
     const preferredType = options.prefer;
+    let providerRefName = 'Provider';
+
     return {
+      'ImportDeclaration > ImportSpecifier[imported.name="Provider"]': (
+        node: TSESTree.ImportSpecifier & {
+          parent: TSESTree.ImportDeclaration;
+          imported: TSESTree.Identifier & {
+            source: TSESTree.Literal;
+          };
+        }
+      ) => {
+        if (node.parent?.source.value === '@nestjs/common') {
+          providerRefName = node.local.name;
+        }
+      },
       'Identifier[typeAnnotation.typeAnnotation.type="TSTypeReference"]': (
         node: TSESTree.Identifier
       ) => {
@@ -60,7 +74,10 @@ export default createRule<Options, MessageIds>({
           node.typeAnnotation?.typeAnnotation as TSESTree.TSTypeReference
         ).typeName;
 
-        if (ASTUtils.isIdentifier(typeName) && typeName.name === 'Provider') {
+        if (
+          ASTUtils.isIdentifier(typeName) &&
+          typeName.name === providerRefName
+        ) {
           const providerType = getProviderType(node);
           if (providerType && providerType !== preferredType) {
             context.report({
