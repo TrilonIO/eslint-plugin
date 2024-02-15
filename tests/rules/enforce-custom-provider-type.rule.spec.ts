@@ -21,6 +21,8 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
   valid: [
     {
       code: `
+      import { Provider } from '@nestjs/common';
+
       const factoryProvider: Provider = {
         provide: 'TOKEN',
         useFactory: () => 'some-value'
@@ -32,6 +34,22 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
         },
       ],
     },
+    // Test for when the Provider type is not imported from '@nestjs/common'
+    {
+      code: `
+      import { Provider } from 'some-other-package';
+      const customValueProvider: Provider = {
+        useValue: 'some-value',
+        provide: 'TOKEN'
+      }
+        `,
+      options: [
+        {
+          prefer: 'factory',
+        },
+      ],
+    },
+    // Test for when the Provider type was renamed
   ],
   invalid: [
     {
@@ -94,8 +112,7 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       ],
     },
     // TODO
-    // Test for when the Provider type is not imported from '@nestjs/common'
-    // Test for when the Provider type was renamed
+
     // Test for when the Provider type is different from the one defined in the configuration
   ],
 });

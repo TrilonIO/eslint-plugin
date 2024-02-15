@@ -9,7 +9,7 @@ const createRule = ESLintUtils.RuleCreator(
   (name) => `https://eslint.org/docs/latest/rules/${name}`
 );
 
-type ProviderType = 'class' | 'factory' | 'value' | 'existing';
+type ProviderType = 'class' | 'factory' | 'value' | 'existing' | 'unknown';
 
 export type Options = [
   {
@@ -52,7 +52,32 @@ export default createRule<Options, MessageIds>({
   create(context) {
     const options = context.options[0] || defaultOptions[0];
     const preferredType = options.prefer;
+    const providerTypesImported: ProviderType[] = [];
     return {
+      'ImportDeclaration[source.value="@nestjs/common"]': (
+        node: TSESTree.ImportDeclaration
+      ) => {
+        const specifiers = node.specifiers;
+        for (const specifier of specifiers) {
+          if (specifier.type === AST_NODE_TYPES.ImportSpecifier) {
+            switch (specifier.imported.name) {
+              case 'Provider':
+                providerTypesImported.push('unknown');
+                break;
+              case 'ClassProvider':
+                providerTypesImported.push('class');
+                break;
+              case 'FactoryProvider':
+                providerTypesImported.push('factory');
+                break;
+              case 'ValueProvider':
+                providerTypesImported.push('value');
+                break;
+            }
+          }
+        }
+      },
+
       'Identifier[typeAnnotation.typeAnnotation.type="TSTypeReference"]': (
         node: TSESTree.Identifier
       ) => {
@@ -60,7 +85,12 @@ export default createRule<Options, MessageIds>({
           node.typeAnnotation?.typeAnnotation as TSESTree.TSTypeReference
         ).typeName;
 
-        if (ASTUtils.isIdentifier(typeName) && typeName.name === 'Provider') {
+        if (
+          ASTUtils.isIdentifier(typeName) &&
+          providerTypesImported.includes(
+            providerNameToType(typeName.name) as ProviderType
+          )
+        ) {
           const providerType = getProviderType(node);
           if (providerType && providerType !== preferredType) {
             context.report({
@@ -125,5 +155,18 @@ function getProviderType(node: TSESTree.Identifier): ProviderType | undefined {
     }
 
     return type;
+  }
+}
+
+function providerNameToType(providerName: string): ProviderType | undefined {
+  switch (providerName) {
+    case 'ClassProvider':
+      return 'class';
+    case 'FactoryProvider':
+      return 'factory';
+    case 'ValueProvider':
+      return 'value';
+    case 'Provider':
+      return 'unknown';
   }
 }
