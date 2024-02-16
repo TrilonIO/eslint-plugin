@@ -75,7 +75,7 @@ export default createRule<Options, MessageIds>({
         specifiers
           .filter(isImportSpecifier)
           .filter(isProviderImport)
-          .forEach((spec: TSESTree.ImportSpecifier) =>
+          .forEach((spec) =>
             providerTypesImported.push(spec.local.name ?? spec.imported.name)
           );
       },
