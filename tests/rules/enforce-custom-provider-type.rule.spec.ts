@@ -19,6 +19,7 @@ const ruleTester = new RuleTester({
 
 ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
   valid: [
+    // Test for when the provider is of the preferred type
     {
       code: `
       import { Provider } from '@nestjs/common';
@@ -49,9 +50,9 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
         },
       ],
     },
-    // Test for when the Provider type was renamed
   ],
   invalid: [
+    // Test for when the provider is not of the preferred type
     {
       code: `
       import { Provider } from '@nestjs/common';
@@ -111,6 +112,7 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
         },
       ],
     },
+    // Test for when the provider is not of the preferred type and was renamed
     {
       code: `
       import { Provider as NestProvider } from '@nestjs/common';
@@ -131,8 +133,5 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
         },
       ],
     },
-    // TODO
-    // Test for when the Provider type is not imported from '@nestjs/common'
-    // Test for when the Provider type is different from the one defined in the configuration
   ],
 });
