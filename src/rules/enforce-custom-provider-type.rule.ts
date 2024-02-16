@@ -58,21 +58,26 @@ export default createRule<Options, MessageIds>({
         node: TSESTree.ImportDeclaration
       ) => {
         const specifiers = node.specifiers;
-        for (const specifier of specifiers) {
-          if (
-            specifier.type === AST_NODE_TYPES.ImportSpecifier &&
-            [
-              'Provider',
-              'ClassProvider',
-              'FactoryProvider',
-              'ValueProvider',
-            ].includes(specifier.imported.name)
-          ) {
-            providerTypesImported.push(
-              specifier.local.name ?? specifier.imported.name
-            );
-          }
-        }
+
+        const isImportSpecifier = (
+          node: TSESTree.ImportClause
+        ): node is TSESTree.ImportSpecifier =>
+          node.type === AST_NODE_TYPES.ImportSpecifier;
+
+        const isProviderImport = (spec: TSESTree.ImportSpecifier) =>
+          [
+            'Provider',
+            'ClassProvider',
+            'FactoryProvider',
+            'ValueProvider',
+          ].includes(spec.imported.name);
+
+        specifiers
+          .filter(isImportSpecifier)
+          .filter(isProviderImport)
+          .forEach((spec: TSESTree.ImportSpecifier) =>
+            providerTypesImported.push(spec.local.name ?? spec.imported.name)
+          );
       },
 
       'Identifier[typeAnnotation.typeAnnotation.type="TSTypeReference"]': (
