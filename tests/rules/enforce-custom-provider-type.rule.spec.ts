@@ -133,5 +133,31 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
         },
       ],
     },
+
+    // Test for when the provider (value) is not of the preferred type (factory) in the "providers" array
+    {
+      code: `
+      import { Module } from '@nestjs/common';
+      @Module({
+        providers: [
+          {
+            provide: 'TOKEN',
+            useValue: 'value-in-providers-array',
+          }
+        ]
+      })
+      export class SomeModule {}
+      `,
+      errors: [
+        {
+          messageId: 'providerTypeMismatch',
+        },
+      ],
+      options: [
+        {
+          prefer: 'factory',
+        },
+      ],
+    },
   ],
 });

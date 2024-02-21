@@ -80,6 +80,36 @@ export default createRule<Options, MessageIds>({
           );
       },
 
+      'Property[key.name="providers"] > ArrayExpression > ObjectExpression': (
+        node: TSESTree.ObjectExpression
+      ) => {
+        for (const property of node.properties) {
+          if (property.type === AST_NODE_TYPES.Property) {
+            const propertyKey = (property.key as TSESTree.Identifier)?.name;
+            const providerType: ProviderType | undefined =
+              propertyKey === 'useClass'
+                ? 'class'
+                : propertyKey === 'useFactory'
+                  ? 'factory'
+                  : propertyKey === 'useValue'
+                    ? 'value'
+                    : propertyKey === 'useExisting'
+                      ? 'existing'
+                      : undefined;
+
+            if (providerType && providerType !== preferredType) {
+              context.report({
+                node: property,
+                messageId: 'providerTypeMismatch',
+                data: {
+                  preferred: preferredType,
+                },
+              });
+            }
+          }
+        }
+      },
+
       'Identifier[typeAnnotation.typeAnnotation.type="TSTypeReference"]': (
         node: TSESTree.Identifier
       ) => {
