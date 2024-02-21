@@ -159,5 +159,104 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
         },
       ],
     },
+    // Test for when the provider (class) is not of the preferred type (factory) in the "providers" array
+    {
+      code: `
+          import { Module } from '@nestjs/common';
+          import { SomeClass } from './some-class';
+
+          @Module({
+            providers: [
+              {
+                provide: 'TOKEN',
+                useClass: SomeClass,
+              }
+            ]
+          })
+          export class SomeModule {}
+          `,
+      errors: [
+        {
+          messageId: 'providerTypeMismatch',
+        },
+      ],
+      options: [
+        {
+          prefer: 'factory',
+        },
+      ],
+    },
+    // Test for when the provider (existing) is not of the preferred type (factory) in the "providers" array
+    {
+      code: `
+              import { Module } from '@nestjs/common';
+              import { SomeClass } from './some-class';
+    
+              @Module({
+                providers: [
+                  {
+                    provide: 'TOKEN',
+                    useExisting: SomeClass,
+                  }
+                ]
+              })
+              export class SomeModule {}
+              `,
+      errors: [
+        {
+          messageId: 'providerTypeMismatch',
+        },
+      ],
+      options: [
+        {
+          prefer: 'factory',
+        },
+      ],
+    },
+    // Test for when many provider types are not of the preferred type (factory) in the "providers" array
+    {
+      code: `
+                  import { Module } from '@nestjs/common';
+                  import { SomeClass } from './some-class';
+        
+                  @Module({
+                    providers: [
+                      {
+                        provide: 'TOKEN',
+                        useExisting: SomeClass,
+                      },
+                      {
+                        provide: 'TOKEN',
+                        useClass: SomeClass,
+                      },
+                      {
+                        provide: 'TOKEN',
+                        useValue: 'value-in-providers-array',
+                      },
+                      {
+                        provide: 'TOKEN',
+                        useFactory: () => 'value-in-providers-array',
+                      }
+                    ]
+                  })
+                  export class SomeModule {}
+                  `,
+      errors: [
+        {
+          messageId: 'providerTypeMismatch',
+        },
+        {
+          messageId: 'providerTypeMismatch',
+        },
+        {
+          messageId: 'providerTypeMismatch',
+        },
+      ],
+      options: [
+        {
+          prefer: 'factory',
+        },
+      ],
+    },
   ],
 });
