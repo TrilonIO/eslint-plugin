@@ -146,40 +146,18 @@ function getProviderType(node: TSESTree.Identifier): ProviderType | undefined {
     if (init?.type === AST_NODE_TYPES.ObjectExpression) {
       const properties = init.properties;
       for (const property of properties) {
-        if (
-          property.type === AST_NODE_TYPES.Property &&
-          ASTUtils.isIdentifier(property.key) &&
-          property.key.name === 'useFactory'
-        ) {
-          type = 'factory';
-          break;
-        }
-
-        if (
-          property.type === AST_NODE_TYPES.Property &&
-          ASTUtils.isIdentifier(property.key) &&
-          property.key.name === 'useClass'
-        ) {
-          type = 'class';
-          break;
-        }
-
-        if (
-          property.type === AST_NODE_TYPES.Property &&
-          ASTUtils.isIdentifier(property.key) &&
-          property.key.name === 'useValue'
-        ) {
-          type = 'value';
-          break;
-        }
-
-        if (
-          property.type === AST_NODE_TYPES.Property &&
-          ASTUtils.isIdentifier(property.key) &&
-          property.key.name === 'useExisting'
-        ) {
-          type = 'existing';
-          break;
+        if (property.type === AST_NODE_TYPES.Property) {
+          const propertyKey = (property.key as TSESTree.Identifier)?.name;
+          type =
+            propertyKey === 'useClass'
+              ? 'class'
+              : propertyKey === 'useFactory'
+                ? 'factory'
+                : propertyKey === 'useValue'
+                  ? 'value'
+                  : propertyKey === 'useExisting'
+                    ? 'existing'
+                    : undefined;
         }
       }
     }
