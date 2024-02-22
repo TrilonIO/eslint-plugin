@@ -85,17 +85,7 @@ export default createRule<Options, MessageIds>({
       ) => {
         for (const property of node.properties) {
           if (property.type === AST_NODE_TYPES.Property) {
-            const propertyKey = (property.key as TSESTree.Identifier)?.name;
-            const providerType: ProviderType | undefined =
-              propertyKey === 'useClass'
-                ? 'class'
-                : propertyKey === 'useFactory'
-                  ? 'factory'
-                  : propertyKey === 'useValue'
-                    ? 'value'
-                    : propertyKey === 'useExisting'
-                      ? 'existing'
-                      : undefined;
+            const providerType = providerTypeOfProperty(property);
 
             if (providerType && providerType !== preferredType) {
               context.report({
@@ -121,7 +111,7 @@ export default createRule<Options, MessageIds>({
           ASTUtils.isIdentifier(typeName) &&
           providerTypesImported.includes(typeName.name)
         ) {
-          const providerType = getProviderType(node);
+          const providerType = providerTypeOfIdentifier(node);
           if (providerType && providerType !== preferredType) {
             context.report({
               node,
@@ -137,7 +127,9 @@ export default createRule<Options, MessageIds>({
   },
 });
 
-function getProviderType(node: TSESTree.Identifier): ProviderType | undefined {
+function providerTypeOfIdentifier(
+  node: TSESTree.Identifier
+): ProviderType | undefined {
   const parent = node.parent;
 
   if (ASTUtils.isVariableDeclarator(parent)) {
@@ -147,17 +139,7 @@ function getProviderType(node: TSESTree.Identifier): ProviderType | undefined {
       const properties = init.properties;
       for (const property of properties) {
         if (property.type === AST_NODE_TYPES.Property) {
-          const propertyKey = (property.key as TSESTree.Identifier)?.name;
-          type =
-            propertyKey === 'useClass'
-              ? 'class'
-              : propertyKey === 'useFactory'
-                ? 'factory'
-                : propertyKey === 'useValue'
-                  ? 'value'
-                  : propertyKey === 'useExisting'
-                    ? 'existing'
-                    : undefined;
+          type = providerTypeOfProperty(property);
         }
       }
     }
@@ -166,3 +148,17 @@ function getProviderType(node: TSESTree.Identifier): ProviderType | undefined {
   }
 }
 
+function providerTypeOfProperty(
+  node: TSESTree.Property
+): ProviderType | undefined {
+  const propertyKey = (node.key as TSESTree.Identifier)?.name;
+  return propertyKey === 'useClass'
+    ? 'class'
+    : propertyKey === 'useFactory'
+      ? 'factory'
+      : propertyKey === 'useValue'
+        ? 'value'
+        : propertyKey === 'useExisting'
+          ? 'existing'
+          : undefined;
+};
