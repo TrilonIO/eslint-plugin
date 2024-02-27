@@ -13,13 +13,13 @@ type ProviderType = 'class' | 'factory' | 'value' | 'existing' | 'unknown';
 
 export type Options = [
   {
-    prefer: ProviderType;
+    prefer: ProviderType[];
   },
 ];
 
 const defaultOptions: Options = [
   {
-    prefer: 'factory',
+    prefer: [],
   },
 ];
 
@@ -38,8 +38,11 @@ export default createRule<Options, MessageIds>({
         type: 'object',
         properties: {
           prefer: {
-            type: 'string',
-            enum: ['class', 'factory', 'value'],
+            type: 'array',
+            items: {
+              type: 'string',
+              enum: ['class', 'factory', 'value', 'existing'],
+            },
           },
         },
       },
@@ -51,7 +54,7 @@ export default createRule<Options, MessageIds>({
   defaultOptions,
   create(context) {
     const options = context.options[0] || defaultOptions[0];
-    const preferredType = options.prefer;
+    const preferredTypes = options.prefer;
     const providerTypesImported: string[] = [];
     return {
       'ImportDeclaration[source.value="@nestjs/common"]': (
@@ -87,12 +90,12 @@ export default createRule<Options, MessageIds>({
           if (property.type === AST_NODE_TYPES.Property) {
             const providerType = providerTypeOfProperty(property);
 
-            if (providerType && providerType !== preferredType) {
+            if (providerType && !preferredTypes.includes(providerType)) {
               context.report({
                 node: property,
                 messageId: 'providerTypeMismatch',
                 data: {
-                  preferred: preferredType,
+                  preferred: preferredTypes,
                 },
               });
             }
@@ -112,12 +115,12 @@ export default createRule<Options, MessageIds>({
           providerTypesImported.includes(typeName.name)
         ) {
           const providerType = providerTypeOfIdentifier(node);
-          if (providerType && providerType !== preferredType) {
+          if (providerType && !preferredTypes.includes(providerType)) {
             context.report({
               node,
               messageId: 'providerTypeMismatch',
               data: {
-                preferred: preferredType,
+                preferred: preferredTypes,
               },
             });
           }

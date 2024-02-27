@@ -31,7 +31,7 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       `,
       options: [
         {
-          prefer: 'factory',
+          prefer: ['factory'],
         },
       ],
     },
@@ -46,7 +46,7 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
         `,
       options: [
         {
-          prefer: 'factory',
+          prefer: ['factory'],
         },
       ],
     },
@@ -63,7 +63,7 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       `,
       options: [
         {
-          prefer: 'factory',
+          prefer: ['factory'],
         },
       ],
       errors: [
@@ -83,7 +83,7 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       `,
       options: [
         {
-          prefer: 'factory',
+          prefer: ['factory'],
         },
       ],
       errors: [
@@ -103,7 +103,7 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       `,
       options: [
         {
-          prefer: 'factory',
+          prefer: ['factory'],
         },
       ],
       errors: [
@@ -124,7 +124,7 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       `,
       options: [
         {
-          prefer: 'factory',
+          prefer: ['factory'],
         },
       ],
       errors: [
@@ -155,7 +155,7 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       ],
       options: [
         {
-          prefer: 'factory',
+          prefer: ['factory'],
         },
       ],
     },
@@ -182,7 +182,7 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       ],
       options: [
         {
-          prefer: 'factory',
+          prefer: ['factory'],
         },
       ],
     },
@@ -209,7 +209,7 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       ],
       options: [
         {
-          prefer: 'factory',
+          prefer: ['factory'],
         },
       ],
     },
@@ -254,7 +254,7 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       ],
       options: [
         {
-          prefer: 'factory',
+          prefer: ['factory'],
         },
       ],
     },
