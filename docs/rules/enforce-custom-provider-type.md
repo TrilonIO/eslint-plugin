@@ -6,7 +6,7 @@ Large teams can have the desire to limit or enforce a particular style of creati
 
 ## Options
 
-This rule accepts an object with the "prefer" property, which might be one of the following values:
+This rule accepts an object with the "prefer" property, which is an array containing one or more of the following values:
 
 - `value`: Enforces the use of value providers.
 - `factory`: Enforces the use of factory providers.
@@ -20,7 +20,7 @@ This rule accepts an object with the "prefer" property, which might be one of th
 "rules": {
   "@trilon/enforce-custom-provider-type": [ 
    "warn", {  
-     "prefer": "factory"
+     "prefer": ["factory", "value"]
    }
   ]
 }
@@ -34,12 +34,12 @@ Considering the options above, the following examples will show how the rule beh
 ```ts
 const customValueProvider: Provider = {
   provide: 'TOKEN',
-  useValue: 'some-value' // ⚠️ provider is not of type "factory"
+  useExisting: 'some-value' // ⚠️ provider is not of type ["factory", "value"]
 }
 
 const customClassProvider: Provider = {
   provide: AbstractClass,
-  useClass: SomeClass  // ⚠️ provider is not of type "factory"
+  useClass: SomeClass  // ⚠️ provider is not of type ["factory", "value"]
 }
 ```
 
