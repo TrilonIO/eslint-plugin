@@ -19,6 +19,17 @@ const ruleTester = new RuleTester({
 
 ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
   valid: [
+    // Test for when no options are provided
+    {
+      code: `
+      import { Provider } from '@nestjs/common';
+
+      const factoryProvider: Provider = {
+        provide: 'TOKEN',
+        useFactory: () => 'some-value'
+      }
+      `,
+    },
     // Test for when the provider is of the preferred type
     {
       code: `
@@ -32,6 +43,23 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       options: [
         {
           prefer: ['factory'],
+        },
+      ],
+    },
+    // Test for when the provider is one of the preferred types
+    {
+      code: `
+      import { Provider } from '@nestjs/common';
+      import { SomeClass } from './some-class';
+
+      const factoryProvider: Provider = {
+        provide: 'TOKEN',
+        useClass: SomeClass
+      }
+      `,
+      options: [
+        {
+          prefer: ['factory', 'class'],
         },
       ],
     },
@@ -64,6 +92,26 @@ ruleTester.run('enforce-custom-provider-type', enforceCustomProviderTypeRule, {
       options: [
         {
           prefer: ['factory'],
+        },
+      ],
+      errors: [
+        {
+          messageId: 'providerTypeMismatch',
+        },
+      ],
+    },
+    // Test for when the provider is not one the preferred types
+    {
+      code: `
+      import { Provider } from '@nestjs/common';
+      const customValueProvider: Provider = {
+        provide: 'TOKEN',
+        useValue: 'some-value' // ⚠️ provider is not of type "factory"
+      }
+      `,
+      options: [
+        {
+          prefer: ['factory', 'class', 'existing'],
         },
       ],
       errors: [

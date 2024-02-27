@@ -90,7 +90,11 @@ export default createRule<Options, MessageIds>({
           if (property.type === AST_NODE_TYPES.Property) {
             const providerType = providerTypeOfProperty(property);
 
-            if (providerType && !preferredTypes.includes(providerType)) {
+            if (
+              providerType &&
+              !preferredTypes.includes(providerType) &&
+              preferredTypes.length > 0
+            ) {
               context.report({
                 node: property,
                 messageId: 'providerTypeMismatch',
@@ -112,7 +116,8 @@ export default createRule<Options, MessageIds>({
 
         if (
           ASTUtils.isIdentifier(typeName) &&
-          providerTypesImported.includes(typeName.name)
+          providerTypesImported.includes(typeName.name) &&
+          preferredTypes.length > 0
         ) {
           const providerType = providerTypeOfIdentifier(node);
           if (providerType && !preferredTypes.includes(providerType)) {
