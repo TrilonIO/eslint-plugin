@@ -46,11 +46,12 @@ The "recommended" preset contains the rules listed below. If you need custom con
 
 ## Rules
 
-| Rule                                                                                 | Description                                                    | Recommended |
+| Rule                                                                                 | Description                                                    | Type |
 | ------------------------------------------------------------------------------------ | -------------------------------------------------------------- | ----------- |
-| [`@trilon/enforce-close-testing-module`](docs/rules/enforce-close-testing-module.md) | Ensures NestJS testing modules are closed properly after tests | ✅          |
-| [`@trilon/check-inject-decorator`](docs/rules/check-inject-decorator.md)             | Detects incorrect usage of `@Inject(TOKEN)` decorator          | ✅          |
-| [`@trilon/detect-circular-reference`](docs/rules/detect-circular-reference.md)       | Detects usage of `forwardRef()` method                         | ✅          |
+| [`@trilon/enforce-close-testing-module`](docs/rules/enforce-close-testing-module.md) | Ensures NestJS testing modules are closed properly after tests | Recommended ✅          |
+| [`@trilon/check-inject-decorator`](docs/rules/check-inject-decorator.md)             | Detects incorrect usage of `@Inject(TOKEN)` decorator          | Recommended ✅          |
+| [`@trilon/detect-circular-reference`](docs/rules/detect-circular-reference.md)       | Detects usage of `forwardRef()` method                         | Recommended ✅          |
+| [`@trilon/enforce-custom-provider-type`](docs/rules/enforce-custom-provider-type.md) | Enforces a styleguide for provider types                       | Strict ⚠️          |
 ---
 
 # Trilon Consulting 
