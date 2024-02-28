@@ -29,5 +29,4 @@ const plugin = {
   },
 };
 
-// @ts-expect-error Still have to investigate why this is failing
 module.exports = plugin;
