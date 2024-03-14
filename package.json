@@ -12,7 +12,7 @@
     "LICENSE"
   ],
   "engines": {
-    "node": ">=18.*.*"
+    "node": ">=16.*.*"
   },
   "scripts": {
     "prepare": "tsc",
@@ -50,4 +50,3 @@
     "eslint": ">=8.0.0"
   }
 }
-
