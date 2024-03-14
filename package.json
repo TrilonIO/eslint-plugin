@@ -12,8 +12,7 @@
     "LICENSE"
   ],
   "engines": {
-    "node": ">=18.*.*",
-    "yarn": ">=4.0.2"
+    "node": ">=18.*.*"
   },
   "scripts": {
     "prepare": "tsc",
@@ -51,3 +50,4 @@
     "eslint": ">=8.0.0"
   }
 }
+
